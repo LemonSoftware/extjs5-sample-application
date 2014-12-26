@@ -1,7 +1,9 @@
 Ext.define('JBF.view.Viewport', {
     extend: 'Ext.container.Viewport',
     uses: [
-        'JBF.view.user.UserGrid'
+        'JBF.view.UserGrid',
+        'JBF.view.DepartmentGrid'
+
     ],
     initComponent: function () {
         Ext.apply(this, {
@@ -10,10 +12,25 @@ Ext.define('JBF.view.Viewport', {
             },
             items: [
                 {
-                    itemId: 'userManagementGridId',
-                    title: 'User Management',
-                    xtype: 'userGrid',
-                    region: 'center'
+                    region: 'center',
+                    xtype: 'tabpanel',
+                    items: [
+                        {
+                            itemId: 'DepartmentManagementGridId',
+                            title: 'Department Management',
+                            xtype: 'DepartmentGrid'
+                        }
+                        ,
+                        {
+                            itemId: 'EmployeeManagementGridId',
+                            title: 'Employee Management',
+                            xtype: 'UserGrid',
+                            reference: 'userGrid'
+                        }
+
+
+
+                    ]
                 }
 
             ]

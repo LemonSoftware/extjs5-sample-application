@@ -12,11 +12,13 @@ Ext.application({
     ],
 
     views: [
-        'JBF.view.user.UserGrid'
+        'JBF.view.UserGrid',
+        'JBF.view.DepartmentGrid'
     ],
 
     controllers: [
-        'JBF.controller.UserController'
+        'JBF.controller.UserController',
+        'JBF.controller.DepartmentController'
     ],
 
     init: function() {

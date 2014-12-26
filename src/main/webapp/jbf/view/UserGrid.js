@@ -1,6 +1,6 @@
-Ext.define('JBF.view.user.UserGrid', {
+Ext.define('JBF.view.UserGrid', {
     extend: 'Ext.grid.Panel',
-    alias: 'widget.userGrid',
+    alias: 'widget.UserGrid',
     initComponent: function () {
         Ext.apply(this, {
             store: Ext.getStore('UserStore'),
@@ -30,6 +30,27 @@ Ext.define('JBF.view.user.UserGrid', {
                     flex: 1,
                     editor: {
                         allowBlank: false
+                    }
+                }
+                , {
+                    header: 'Department',
+                    //dataIndex: 'name',
+                    flex: 1,
+                    renderer: function (value, metaData, record, row, col, store, gridView) {
+                        return record.data != null && record.data.department != null ? record.data.department.name : '';
+                    },
+                    editor: {
+                        allowBlank: true,
+                        xtype: 'combo',
+                        displayField: 'name',
+                        valueField: 'id',
+                        value: 'Select department...',
+                        store: Ext.getStore('DepartmentStore'),
+                        listeners:{
+                            'select': function(combo, records){
+                                this.up('UserGrid').getSelectionModel().getSelection()[0].data.department = records[0].data;
+                            }
+                        }
                     }
                 }
             ],

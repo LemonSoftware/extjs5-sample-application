@@ -1,8 +1,11 @@
 package com.lemonsoftware.extjsplugin.storage;
 
 import com.lemonsoftware.extjsplugin.bean.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,14 +18,23 @@ public class UserStorage {
 	private long idSequence = 0;
 	private List<User> storage;
 
+	@Autowired
+	private DepartmentStorage departmentStorage;
+
+	@Autowired
+	private ApplicationContext appContext;
+
 
 	public UserStorage() {
 		storage = new ArrayList<>();
-		initStorage();
 	}
 
+	@PostConstruct
 	private void initStorage() {
-		storage.add(new User(generateId(), "John", "Smith", "user"));
+		User user = new User(generateId(), "John", "Smith", "user", 1L);
+		user.setDepartment(departmentStorage.findDepartmentById(1L));
+		storage.add(user);
+
 	}
 
 	private long generateId() {

@@ -1,49 +1,50 @@
-Ext.define('JBF.controller.UserController', {
+
+Ext.define('JBF.controller.DepartmentController', {
     extend: 'Ext.app.Controller',
 
     models: [
-        'UserModel'
+        'DepartmentModel'
     ],
 
     stores: [
-        'UserStore'
+        'DepartmentStore'
     ],
 
     views: [
-        'JBF.view.UserGrid'
+'JBF.view.DepartmentGrid'
     ],
 
     refs: [
-        {ref: 'addUserBtn', selector: 'button[itemId = addUserBtnId]'},
-        {ref: 'deleteUserBtn', selector: 'button[itemId = deleteUserBtnId]'},
-        {ref: 'mainGridPanel', selector: 'UserGrid[itemId = EmployeeManagementGridId]'}
+        {ref: 'addDepartmentBtn', selector: 'button[itemId = addDepartmentBtnId]'},
+        {ref: 'deleteDepartmentBtn', selector: 'button[itemId = deleteDepartmentBtnId]'},
+        {ref: 'mainGridPanel', selector: 'DepartmentGrid[itemId = DepartmentManagementGridId]'}
     ],
 
     init: function () {
         this.control({
-            'UserGrid[itemId = EmployeeManagementGridId]': {
+            'DepartmentGrid[itemId = DepartmentManagementGridId]': {
                 'edit': this.onRowEditFinished,
                 'canceledit': this.onRowEditCanceled,
                 'selectionchange': this.onSelectRow
             },
-            'button[itemId=addUserBtnId]': {
-                'click': this.userAdd
+            'button[itemId=addDepartmentBtnId]': {
+                'click': this.DepartmentAdd
             },
-            'button[itemId=deleteUserBtnId]': {
-                'click': this.userDelete
+            'button[itemId=deleteDepartmentBtnId]': {
+                'click': this.DepartmentDelete
             }
         })
-    },
+},
 
     onSelectRow: function (view, records) {
-        this.getDeleteUserBtn().setDisabled(!records.length);
+        this.getDeleteDepartmentBtn().setDisabled(!records.length);
     },
 
     onRowEditFinished: function (editor, context, eOpts) {
         var me = this;
         Ext.Ajax.request({
             method: 'POST',
-            url: '/webapi/users/update',
+            url: '/webapi/departments/update',
             jsonData: context.record.getData(),
             success: function (response) {
                 var responseData = Ext.decode(response.responseText);
@@ -60,42 +61,41 @@ Ext.define('JBF.controller.UserController', {
 
     onRowEditCanceled: function (editor, context, eOpts) {
         var sm = this.getMainGridPanel().getSelectionModel();
-        var userStore = this.getStore('UserStore');
+        var store = this.getStore('DepartmentStore');
         var recordData = sm.getSelection()[0].data;
         if (!recordData.id) {
-            userStore.remove(sm.getSelection());
-            if (userStore.getCount() > 0) {
+            store.remove(sm.getSelection());
+            if (store.getCount() > 0) {
                 sm.select(0);
             }
         }
     },
 
-    userAdd: function () {
+    DepartmentAdd: function () {
         var rowEditor = this.getMainGridPanel().getPlugin('roweditorid');
         rowEditor.cancelEdit();
-        var newRecord = Ext.create('JBF.model.UserModel');
-        newRecord.department = Ext.getStore('DepartmentStore').getAt(0);
+        var newRecord = Ext.create('JBF.model.DepartmentModel');
         this.id = this.id + 1;
-        var userStore = Ext.getStore('UserStore');
-        userStore.insert(0, newRecord);
+        var store = Ext.getStore('DepartmentStore');
+        store.insert(0, newRecord);
         this.getMainGridPanel().getView().refresh();
         rowEditor.startEdit(0, 0);
     },
 
-    userDelete: function () {
+    DepartmentDelete: function () {
         var sm = this.getMainGridPanel().getSelectionModel();
         var rowEditor = this.getMainGridPanel().getPlugin('roweditorid');
-        var userStore = Ext.getStore('UserStore');
+        var store = Ext.getStore('DepartmentStore');
         rowEditor.cancelEdit();
         var selectedRecord = sm.getSelection();
-        Ext.MessageBox.confirm('Confirm', 'Are you sure you want to delete User?', function (btn) {
+        Ext.MessageBox.confirm('Confirm', 'Are you sure you want to delete Department?', function (btn) {
             if (btn == 'yes') {
                 Ext.Ajax.request({
                     method: 'POST',
-                    url: '/webapi/users/delete?id=' + selectedRecord[0].data.id,
+                    url: '/webapi/departments/delete?id=' + selectedRecord[0].data.id,
                     success: function (response) {
-                        userStore.remove(selectedRecord);
-                        if (userStore.getCount() > 0) {
+                        store.remove(selectedRecord);
+                        if (store.getCount() > 0) {
                             sm.select(0);
                         }
                         Ext.MessageBox.hide();
@@ -109,21 +109,18 @@ Ext.define('JBF.controller.UserController', {
         });
     },
 
-    updateRecord: function (data) {
-        var newRecord = Ext.create('JBF.model.UserModel', {
-            id: data.id,
-            firstname: data.firstname,
-            lastname: data.lastname,
-            username: data.username,
-            department: data.department
-        });
-        this.refreshSelectedRecord(newRecord);
-    },
 
+updateRecord: function (data) {
+    var newRecord = Ext.create('JBF.model.DepartmentModel', {
+        id: data.id,
+        name: data.name
+    });
+    this.refreshSelectedRecord(newRecord);
+    },
     refreshSelectedRecord: function (record) {
-        var userStore = Ext.getStore('UserStore');
-        var selectedIndex = userStore.indexOf(this.getMainGridPanel().getSelectionModel().getSelection()[0]);
-        Ext.getStore('UserStore').remove(this.getMainGridPanel().getSelectionModel().getSelection()[0]);
-        Ext.getStore('UserStore').insert(selectedIndex, record);
+        var store = Ext.getStore('DepartmentStore');
+        var selectedIndex = store.indexOf(this.getMainGridPanel().getSelectionModel().getSelection()[0]);
+        Ext.getStore('DepartmentStore').remove(this.getMainGridPanel().getSelectionModel().getSelection()[0]);
+        Ext.getStore('DepartmentStore').insert(selectedIndex, record);
     }
 });

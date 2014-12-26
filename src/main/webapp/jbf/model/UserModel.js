@@ -22,6 +22,10 @@ Ext.define('JBF.model.UserModel', {
         {
             name: 'username',
             type: 'string'
+        },
+        {
+          name:'departmentId',
+            reference: 'JBF.model.DepartmentModel'
         }
     ]
 });
